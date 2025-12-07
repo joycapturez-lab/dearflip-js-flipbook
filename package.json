@@ -1,6 +1,6 @@
 {
   "name": "@dearhive/dearflip-jquery-flipbook",
-  "version": "1.7.3",
+  "version": "1.7.36",
   "description": "DearFlip - Create realistic 3D FlipBook from PDF using jQuery.",
   "main": "index.js",
   "directories": {
