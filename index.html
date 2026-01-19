@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- DFlip CSS -->
-  <link href="../dflip/css/dflip.min.css" rel="stylesheet">
-  <link href="../dflip/css/themify-icons.min.css" rel="stylesheet">
+  <link href="dflip/css/dflip.min.css" rel="stylesheet">
+  <link href="dflip/css/themify-icons.min.css" rel="stylesheet">
 
   <style>
     body {
@@ -48,7 +48,6 @@
       height: 100%;
     }
 
-    /* Make DFlip container fully transparent */
     #bookContainer ._df_book {
       background: transparent !important;
       box-shadow: none !important;
@@ -57,7 +56,7 @@
 </head>
 <body>
 
-  <!-- PASSWORD LOCK -->
+  <!-- PASSWORD LOCK SCREEN -->
   <div id="lockScreen">
     <h2>Enter Password</h2>
     <input type="password" id="password" placeholder="Password">
@@ -72,58 +71,66 @@
          height="500"
          webgl="true"
          backgroundcolor="transparent"
-         source="example-assets/books/book.pdf">
+         source="book.pdf">
     </div>
   </div>
 
-  <!-- Background Music -->
-  <audio id="bgMusic" src="background-music.mp3" loop></audio>
+  <!-- BACKGROUND MUSIC -->
+  <audio id="bgMusic" src="sound/turn.mp3" loop></audio>
 
   <!-- Scripts -->
-  <script src="../dflip/js/libs/jquery.min.js"></script>
-  <script src="../dflip/js/dflip.min.js"></script>
+  <script src="dflip/js/libs/jquery.min.js"></script>
+  <script src="dflip/js/libs/dflip.min.js"></script>
 
   <script>
-    const CORRECT_PASSWORD = "8765"; // change this
-    let resetTimer; // stores the timeout
-    const music = document.getElementById("bgMusic"); // audio element
+    // PASSWORD LOGIC
+    let currentPassword = "8798";  // initial password
+    let passwordChanged = false;    // will switch to new password after first timeout
+    let resetTimer = null;
+    const music = document.getElementById("bgMusic");
 
     function unlock() {
       const input = document.getElementById("password").value;
-
-      if (input === CORRECT_PASSWORD) {
+      if(input === currentPassword){
         document.getElementById("lockScreen").style.display = "none";
         document.getElementById("bookContainer").style.display = "block";
         document.getElementById("error").style.display = "none";
 
         // Play music
-        music.currentTime = 0; // start from beginning
-        music.volume = 0.5; // optional volume
-        music.play().catch(() => {
-          console.log("Autoplay prevented. User interaction required.");
-        });
+        music.currentTime = 0;
+        music.volume = 0.5;
+        music.play().catch(() => console.log("Autoplay blocked."));
 
-        // Start 30-second timer to reset page
-        resetTimer = setTimeout(resetPage, 300000); // 30 seconds
+        // Start 5-minute timer
+        resetTimer = setTimeout(resetPage, 300000);
       } else {
         document.getElementById("error").style.display = "block";
       }
     }
 
-    function resetPage() {
-      // Hide flipbook, show password screen
+    function resetPage(){
       document.getElementById("bookContainer").style.display = "none";
       document.getElementById("lockScreen").style.display = "block";
-      document.getElementById("password").value = ""; // clear input
+      document.getElementById("password").value = "";
 
       // Stop music
       music.pause();
       music.currentTime = 0;
+
+      // Switch password after first timeout
+      if(!passwordChanged){
+        currentPassword = "6743";
+        passwordChanged = true;
+        console.log("Password has been changed.");
+      }
     }
 
-    // Optional: reset timer if user types password again
-    document.getElementById("password").addEventListener("input", function() {
-      if (resetTimer) clearTimeout(resetTimer);
+    // Reset timer if user types again
+    document.getElementById("password").addEventListener("input", () => {
+      if(resetTimer){
+        clearTimeout(resetTimer);
+        resetTimer = null;
+      }
     });
   </script>
 
