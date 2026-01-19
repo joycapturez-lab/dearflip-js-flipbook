@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Locked Flipbook</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- DFlip CSS -->
+  <link href="../dflip/css/dflip.min.css" rel="stylesheet">
+  <link href="../dflip/css/themify-icons.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: url("bg.gif") center/cover no-repeat;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Password Screen */
+    #lockScreen {
+      background: rgba(0,0,0,0.75);
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      color: white;
+    }
+
+    #lockScreen input {
+      padding: 10px;
+      font-size: 16px;
+      width: 200px;
+      margin-top: 10px;
+    }
+
+    #lockScreen button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    #bookContainer {
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Make DFlip container fully transparent */
+    #bookContainer ._df_book {
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PASSWORD LOCK -->
+  <div id="lockScreen">
+    <h2>Enter Password</h2>
+    <input type="password" id="password" placeholder="Password">
+    <br>
+    <button onclick="unlock()">Unlock</button>
+    <p id="error" style="color:red;display:none;">Wrong password</p>
+  </div>
+
+  <!-- FLIPBOOK -->
+  <div id="bookContainer">
+    <div class="_df_book"
+         height="500"
+         webgl="true"
+         backgroundcolor="transparent"
+         source="example-assets/books/book.pdf">
+    </div>
+  </div>
+
+  <!-- Background Music -->
+  <audio id="bgMusic" src="background-music.mp3" loop></audio>
+
+  <!-- Scripts -->
+  <script src="../dflip/js/libs/jquery.min.js"></script>
+  <script src="../dflip/js/dflip.min.js"></script>
+
+  <script>
+    const CORRECT_PASSWORD = "8765"; // change this
+    let resetTimer; // stores the timeout
+    const music = document.getElementById("bgMusic"); // audio element
+
+    function unlock() {
+      const input = document.getElementById("password").value;
+
+      if (input === CORRECT_PASSWORD) {
+        document.getElementById("lockScreen").style.display = "none";
+        document.getElementById("bookContainer").style.display = "block";
+        document.getElementById("error").style.display = "none";
+
+        // Play music
+        music.currentTime = 0; // start from beginning
+        music.volume = 0.5; // optional volume
+        music.play().catch(() => {
+          console.log("Autoplay prevented. User interaction required.");
+        });
+
+        // Start 30-second timer to reset page
+        resetTimer = setTimeout(resetPage, 300000); // 30 seconds
+      } else {
+        document.getElementById("error").style.display = "block";
+      }
+    }
+
+    function resetPage() {
+      // Hide flipbook, show password screen
+      document.getElementById("bookContainer").style.display = "none";
+      document.getElementById("lockScreen").style.display = "block";
+      document.getElementById("password").value = ""; // clear input
+
+      // Stop music
+      music.pause();
+      music.currentTime = 0;
+    }
+
+    // Optional: reset timer if user types password again
+    document.getElementById("password").addEventListener("input", function() {
+      if (resetTimer) clearTimeout(resetTimer);
+    });
+  </script>
+
+</body>
+</html>
